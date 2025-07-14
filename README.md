@@ -1,4 +1,5 @@
 # Faultiz - Visual Defect Classifier & Vision LLM Assistant
+<img width="1511" height="722" alt="image" src="https://github.com/user-attachments/assets/8b921794-92be-40bc-a06f-e4a85b99a7af" />
 
 A comprehensive AI-powered solution for industrial defect detection, analysis, and repair recommendations.
 
