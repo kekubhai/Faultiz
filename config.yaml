@@ -1,0 +1,55 @@
+# Model Configuration
+model:
+  name: "efficientnet-b0"
+  num_classes: 7
+  pretrained: true
+  checkpoint_path: "models/pretrained/best_model.pth"
+
+# Training Configuration
+training:
+  batch_size: 32
+  learning_rate: 0.001
+  epochs: 50
+  image_size: 224
+  data_augmentation: true
+
+# Defect Classes
+defect_classes:
+  0: "Normal"
+  1: "Scratch"
+  2: "Dent"
+  3: "Crack"
+  4: "Corrosion" 
+  5: "Missing_Part"
+  6: "Color_Defect"
+
+# Google Cloud Vision API
+google_cloud:
+  credentials_path: "credentials/service-account-key.json"
+  project_id: "your-project-id"
+
+# Hugging Face LLM
+llm:
+  model_name: "microsoft/DialoGPT-medium"
+  max_length: 512
+  temperature: 0.7
+  device: "auto"
+
+# Streamlit Configuration
+streamlit:
+  page_title: "Faultiz - Visual Defect Classifier"
+  page_icon: "🔍"
+  layout: "wide"
+  sidebar_state: "expanded"
+
+# Image Processing
+image_processing:
+  max_upload_size: 10  # MB
+  supported_formats: ["jpg", "jpeg", "png", "bmp"]
+  resize_method: "bilinear"
+
+# Grad-CAM Configuration
+gradcam:
+  target_layer: "features.7"  # EfficientNet layer
+  alpha: 0.4  # Overlay transparency
+  colormap: "jet"
