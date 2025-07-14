@@ -4,8 +4,14 @@ import cv2
 import numpy as np
 from PIL import Image, ImageEnhance, ImageFilter
 from typing import Tuple, Union, Optional, List
-import albumentations as A
-from albumentations.pytorch import ToTensorV2
+try:
+    import albumentations as A
+    from albumentations.pytorch import ToTensorV2
+    ALBUMENTATIONS_AVAILABLE = True
+except ImportError:
+    ALBUMENTATIONS_AVAILABLE = False
+    A = None
+    ToTensorV2 = None
 
 def preprocess_image(image: Image.Image, 
                     target_size: int = 224,
@@ -173,7 +179,7 @@ def detect_edges(image: Image.Image,
     return Image.fromarray(edges)
 
 def get_training_transforms(image_size: int = 224,
-                           augment: bool = True) -> A.Compose:
+                           augment: bool = True):
     """
     Get training data augmentation transforms.
     
@@ -184,6 +190,8 @@ def get_training_transforms(image_size: int = 224,
     Returns:
         Albumentations compose object
     """
+    if not ALBUMENTATIONS_AVAILABLE:
+        raise ImportError("Albumentations is not installed. Please install it to use data augmentation features.")
     if augment:
         return A.Compose([
             A.Resize(image_size, image_size),
@@ -226,7 +234,7 @@ def get_training_transforms(image_size: int = 224,
             ToTensorV2()
         ])
 
-def get_validation_transforms(image_size: int = 224) -> A.Compose:
+def get_validation_transforms(image_size: int = 224):
     """
     Get validation transforms (no augmentation).
     
@@ -236,6 +244,8 @@ def get_validation_transforms(image_size: int = 224) -> A.Compose:
     Returns:
         Albumentations compose object
     """
+    if not ALBUMENTATIONS_AVAILABLE:
+        raise ImportError("Albumentations is not installed. Please install it to use validation transforms.")
     return A.Compose([
         A.Resize(image_size, image_size),
         A.Normalize(
@@ -245,13 +255,15 @@ def get_validation_transforms(image_size: int = 224) -> A.Compose:
         ToTensorV2()
     ])
 
-def create_defect_augmentations() -> A.Compose:
+def create_defect_augmentations():
     """
     Create defect-specific augmentations to simulate various defect types.
     
     Returns:
         Albumentations compose object
     """
+    if not ALBUMENTATIONS_AVAILABLE:
+        raise ImportError("Albumentations is not installed. Please install it to use defect augmentations.")
     return A.Compose([
         A.OneOf([
             # Scratch simulation
