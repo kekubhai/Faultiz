@@ -1,0 +1,7 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'faultiz-app'
+    static_configs:
+      - targets: ['faultiz-app:8000']
