@@ -32,10 +32,10 @@ class DefectClassifier(nn.Module):
         self.backbone_name = backbone
         self.dropout_rate = dropout_rate
         
-        # Initialize backbone
+      
         self._build_backbone(pretrained)
         
-        # Add classifier head
+  
         self._build_classifier()
         
     def _build_backbone(self, pretrained: bool):
@@ -47,7 +47,7 @@ class DefectClassifier(nn.Module):
             else:
                 self.backbone = EfficientNet.from_name(self.backbone_name)
             
-            # Remove the classifier
+           
             self.feature_dim = self.backbone._fc.in_features
             self.backbone._fc = nn.Identity()
             
@@ -89,7 +89,7 @@ class DefectClassifier(nn.Module):
         """
         features = self.backbone(x)
         
-        # Handle different backbone outputs
+    
         if len(features.shape) > 2:
             features = F.adaptive_avg_pool2d(features, (1, 1))
             features = features.view(features.size(0), -1)
@@ -152,10 +152,10 @@ class DefectClassifier(nn.Module):
             Target layer module
         """
         if self.backbone_name.startswith("efficientnet"):
-            # EfficientNet: use the last convolutional block
+           
             return self.backbone._blocks[-1]
         elif self.backbone_name.startswith("resnet"):
-            # ResNet: use layer4
+          
             return self.backbone.layer4[-1]
         else:
             raise ValueError(f"Target layer not defined for {self.backbone_name}")
@@ -182,7 +182,7 @@ class DefectClassifierTrainer:
             4: "Corrosion", 5: "Missing_Part", 6: "Color_Defect"
         }
         
-        # Training components
+      
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = None
         self.scheduler = None
@@ -209,7 +209,7 @@ class DefectClassifierTrainer:
         else:
             raise ValueError(f"Unsupported optimizer: {optimizer_type}")
         
-        # Cosine annealing scheduler
+        
         self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
             self.optimizer, T_max=50, eta_min=1e-6
         )
@@ -224,22 +224,22 @@ class DefectClassifierTrainer:
         for batch_idx, (images, labels) in enumerate(dataloader):
             images, labels = images.to(self.device), labels.to(self.device)
             
-            # Forward pass
+          
             self.optimizer.zero_grad()
             outputs = self.model(images)
             loss = self.criterion(outputs, labels)
             
-            # Backward pass
+           
             loss.backward()
             self.optimizer.step()
             
-            # Statistics
+            
             running_loss += loss.item()
             _, predicted = torch.max(outputs.data, 1)
             total_samples += labels.size(0)
             correct_predictions += (predicted == labels).sum().item()
         
-        # Calculate metrics
+        
         epoch_loss = running_loss / len(dataloader)
         epoch_accuracy = correct_predictions / total_samples
         

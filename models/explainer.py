@@ -28,7 +28,7 @@ class GradCAM:
         self.gradients = None
         self.activations = None
         
-        # Register hooks
+        
         self._register_hooks()
     
     def _register_hooks(self):
@@ -56,40 +56,40 @@ class GradCAM:
         Returns:
             CAM heatmap as numpy array
         """
-        # Ensure model is in eval mode
+        
         self.model.eval()
         
-        # Forward pass
+  
         input_tensor.requires_grad_(True)
         output = self.model(input_tensor)
         
-        # Get target class
+       
         if target_class is None:
             target_class = output.argmax(dim=1).item()
         
-        # Zero gradients
+        
         self.model.zero_grad()
         
-        # Backward pass for target class
+       
         target_score = output[0, target_class]
         target_score.backward(retain_graph=True)
         
-        # Generate CAM
+       
         gradients = self.gradients[0]  # (C, H, W)
         activations = self.activations[0]  # (C, H, W)
         
-        # Global average pooling of gradients
+        
         weights = gradients.mean(dim=(1, 2))  # (C,)
         
-        # Weighted combination of activations
+      
         cam = torch.zeros(activations.shape[1:], dtype=torch.float32)  # (H, W)
         for i, weight in enumerate(weights):
             cam += weight * activations[i]
         
-        # Apply ReLU
+        
         cam = F.relu(cam)
         
-        # Normalize CAM
+        
         if cam.max() > 0:
             cam = cam / cam.max()
         
@@ -112,22 +112,22 @@ class GradCAM:
         Returns:
             Tuple of (cam, heatmap_overlay)
         """
-        # Generate CAM
+        
         cam = self.generate_cam(input_tensor, target_class)
         
-        # Resize CAM to input size
+       
         input_size = input_tensor.shape[2:]  # (H, W)
         cam_resized = cv2.resize(cam, (input_size[1], input_size[0]))
         
-        # Convert input tensor to image
+       
         input_image = self._tensor_to_image(input_tensor)
         
-        # Apply colormap to CAM
+        
         colormap_func = cm.get_cmap(colormap)
         cam_colored = colormap_func(cam_resized)
         cam_colored = (cam_colored[:, :, :3] * 255).astype(np.uint8)
         
-        # Create overlay
+       
         heatmap_overlay = cv2.addWeighted(
             input_image, 1 - alpha, cam_colored, alpha, 0
         )
@@ -144,13 +144,13 @@ class GradCAM:
         Returns:
             Image as numpy array (H, W, C)
         """
-        # Remove batch dimension and convert to numpy
+        
         image = tensor.squeeze(0).detach().cpu().numpy()  # (C, H, W)
         
-        # Transpose to (H, W, C)
+       
         image = np.transpose(image, (1, 2, 0))
         
-        # Denormalize (assuming ImageNet normalization)
+        
         mean = np.array([0.485, 0.456, 0.406])
         std = np.array([0.229, 0.224, 0.225])
         image = std * image + mean

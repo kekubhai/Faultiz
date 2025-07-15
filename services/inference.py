@@ -31,20 +31,19 @@ class InferencePipeline:
         """
         self.config = config
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        
-        # Class names mapping
+   
         self.class_names = config.get('defect_classes', {
             0: "Normal", 1: "Scratch", 2: "Dent", 3: "Crack",
             4: "Corrosion", 5: "Missing_Part", 6: "Color_Defect"
         })
         
-        # Initialize components
+       
         self.classifier = None
         self.explainer = None
         self.ocr_service = None
         self.llm_service = None
         
-        # Initialize all services
+        
         self._initialize_services()
         
         logging.info("Inference pipeline initialized successfully")
@@ -73,11 +72,11 @@ class InferencePipeline:
         try:
             logging.info("Initializing defect classifier...")
             
-            # Create model
+            
             self.classifier = create_model(self.config)
             self.classifier = self.classifier.to(self.device)
             
-            # Load pretrained weights if available
+           
             checkpoint_path = self.config.get('model', {}).get('checkpoint_path')
             if checkpoint_path:
                 try:
